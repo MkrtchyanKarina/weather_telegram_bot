@@ -68,7 +68,7 @@ def weather_json_parse(response):
             return -1
 
 
-def weather_right_now(city):
+def current_weather(city):
     params = {'q': city, 'appid': weather_token, 'units': 'metric'}
     url_ = "https://api.openweathermap.org/data/2.5/weather"
     response_ = requests.get(url=url_, params=params)

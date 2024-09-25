@@ -2,7 +2,7 @@ import telebot
 from telebot import types
 
 from tokens import bot_token
-from parser import weather_right_now, get_photo
+from parser import current_weather, get_photo
 
 bot = telebot.TeleBot(bot_token)
 
@@ -10,10 +10,10 @@ bot = telebot.TeleBot(bot_token)
 @bot.message_handler(commands=['start'])
 def start(message):
     markup_reply = types.ReplyKeyboardMarkup()
-    button_weather_right_now = types.InlineKeyboardButton(text="Weather right now", callback_data="Weather right now")
+    button_current_weather = types.InlineKeyboardButton(text="Current weather", callback_data="Current weather")
     button_picture = types.InlineKeyboardButton(text="Beautiful picture of nature", callback_data="Beautiful picture of nature")
 
-    markup_reply.add(button_weather_right_now, button_picture)
+    markup_reply.add(button_current_weather, button_picture)
     if message.text in ['/start', 'Hi', 'Hello', 'Привет', 'start', 'hi', 'hello', 'привет']:
         bot.send_message(message.chat.id, "Hello! What do you want?", reply_markup=markup_reply)
         bot.register_next_step_handler(message, answer)
@@ -33,12 +33,12 @@ def start(message):
 
 @bot.message_handler(content_types=["text"])
 def answer(message):
-    if message.text == "Weather right now":
+    if message.text == "Current weather":
         bot.send_message(message.chat.id, "Ok! Enter your city name: ", reply_markup=types.ReplyKeyboardRemove())
-        bot.register_next_step_handler(message, return_weather_right_now)
+        bot.register_next_step_handler(message, return_current_weather)
     elif message.text == "Beautiful picture of nature":
         bot.send_message(message.chat.id, "Ok! What you want to see? Text me, please )) ", reply_markup=types.ReplyKeyboardRemove())
-        bot.register_next_step_handler(message, beautiful_picture)
+        bot.register_next_step_handler(message, return_beautiful_picture)
     else:
         bot.send_message(message.chat.id, "Sorry, I don't understand what do you mean :(\nPlease, enter your request again: ")
         bot.register_next_step_handler(message, answer)
@@ -54,12 +54,12 @@ def continue_(message):
     bot.register_next_step_handler(message, start)
 
 @bot.message_handler(content_types=["text"])
-def return_weather_right_now(message):
+def return_current_weather(message):
     try:
-        photo, text = weather_right_now(message.text)
+        photo, text = current_weather(message.text)
         if len(text) == 0 or len(photo) == 0:
             bot.send_message(message.chat.id, "I can't find this city :( \nPlease, write the correct name and try again")
-            bot.register_next_step_handler(message, return_weather_right_now)
+            bot.register_next_step_handler(message, return_current_weather)
 
         else:
             bot.send_photo(message.chat.id, caption=text, photo=photo)
@@ -69,11 +69,11 @@ def return_weather_right_now(message):
         continue_(message)
 
 @bot.message_handler(content_types=["text"])
-def beautiful_picture(message):
+def return_beautiful_picture(message):
     photo = get_photo(message.text)
     if len(photo) == 0:
         bot.send_message(message.chat.id, "I can't find this :( \nPlease, write the correct name and try again")
-        bot.register_next_step_handler(message, beautiful_picture)
+        bot.register_next_step_handler(message, return_beautiful_picture)
     else:
         bot.send_photo(message.chat.id, caption="Here is your picture! It's so gorgeous!", photo=photo)
         continue_(message)
