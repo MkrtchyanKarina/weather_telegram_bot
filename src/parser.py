@@ -32,9 +32,7 @@ def get_photo(query):
 
 
 def weather_json_parse(response):
-
     if response.ok:
-
         information = response.json()
         description = information['weather'][0]['description']  # rain, snow and ect.
 
@@ -56,7 +54,8 @@ def weather_json_parse(response):
         wind_dir = wind_direction(int(information['wind']['deg']))
 
         result = (
-            f"Now in {information['name']} {temperature}, {description}.\nIt feels like {temp_feels_like}.\nAtmospheric pressure is {pressure} mmHg.\n"
+            f"Now in {information['name']} {temperature}, {description}.\nIt feels like "
+            f"{temp_feels_like}.\nAtmospheric pressure is {pressure} mmHg.\n"
             f"Humidity is {humidity}%.\nWind: {wind_speed} m/s ({wind_dir})")
 
         return get_photo(description), result
@@ -70,8 +69,8 @@ def weather_json_parse(response):
 
 def current_weather(city):
     params = {'q': city, 'appid': weather_token, 'units': 'metric'}
-    url_ = "https://api.openweathermap.org/data/2.5/weather"
-    response_ = requests.get(url=url_, params=params)
-    return weather_json_parse(response_)
+    url = "https://api.openweathermap.org/data/2.5/weather"
+    response = requests.get(url=url, params=params)
+    return weather_json_parse(response)
 
 

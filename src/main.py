@@ -26,9 +26,9 @@ def start(message):
         markup_reply.add(button_start)
         bot.send_message(message.chat.id, "Bye! See you later ))", reply_markup=markup_reply)
         bot.register_next_step_handler(message, start)
-
     else:
         bot.send_message(message.chat.id, "Sorry, I don't understand what do you mean :(\nPlease, enter your request again: ")
+        bot.register_next_step_handler(message, start)
 
 
 @bot.message_handler(content_types=["text"])
@@ -53,6 +53,7 @@ def continue_(message):
     bot.send_message(message.chat.id, "Do you want to continue?", reply_markup=markup_reply)
     bot.register_next_step_handler(message, start)
 
+
 @bot.message_handler(content_types=["text"])
 def return_current_weather(message):
     try:
@@ -68,6 +69,7 @@ def return_current_weather(message):
         bot.send_message(message.chat.id, "Problems with the site :( \nPlease write back later ")
         continue_(message)
 
+
 @bot.message_handler(content_types=["text"])
 def return_beautiful_picture(message):
     photo = get_photo(message.text)
@@ -75,7 +77,8 @@ def return_beautiful_picture(message):
         bot.send_message(message.chat.id, "I can't find this :( \nPlease, write the correct name and try again")
         bot.register_next_step_handler(message, return_beautiful_picture)
     else:
-        bot.send_photo(message.chat.id, caption="Here is your picture! It's so gorgeous!", photo=photo)
+        bot.send_photo(message.chat.id, caption="Here is your picture! It's beautiful!", photo=photo)
         continue_(message)
+
 
 bot.infinity_polling(none_stop = True)
